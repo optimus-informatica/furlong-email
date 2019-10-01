@@ -241,35 +241,36 @@ public class MainFrame extends javax.swing.JFrame {
                 Date dt = message.getSentDate();
     
                 System.out.println("Date: " + dt + " é depois de " + lastDate);
+                if (dt.before(lastDate)) {
+                    break;
+                }
     
                 //System.out.println(dt.toString());
-                
-                if (dt.after(lastDate)) {
-                    System.out.println(dt.toString());
-                    isReader = false;
+                System.out.println(dt.toString());
+                isReader = false;
     
-                    logs.setText("Lendo a mensagem: " + subject);
+                logs.setText("Lendo a mensagem: " + subject);
     
-                    for (Address addr : message.getFrom()) {
-                        if (addr.toString().equals(configs.getProperty("remetente"))) {
-                            isReader = true;
-                        }
+                for (Address addr : message.getFrom()) {
+                    if (addr.toString().equals(configs.getProperty("remetente"))) {
+                        isReader = true;
                     }
-                    if (isReader) {
-                        if ((matcher = p.matcher(subject)).matches()) {
-                            ativacao = matcher.group(2);
-                            logs.setText("Gerando PDF para [" + ativacao + "] ...");
-                            String html = message.getContent().toString();
-                            String p1 = html.substring(0, html.indexOf("<body>"));
-                            String p2 = html.substring(html.indexOf("<body>") + 6);
-                            String data = p1 + "<body>" + barcode(ativacao) + p2;
-                            String filename = ativacao + ".pdf";
-                            html2pdf(data, filename);
-                        }
+                }
+                if (isReader) {
+                    if ((matcher = p.matcher(subject)).matches()) {
+                        ativacao = matcher.group(2);
+                        logs.setText("Gerando PDF para [" + ativacao + "] ...");
+                        String html = message.getContent().toString();
+                        String p1 = html.substring(0, html.indexOf("<body>"));
+                        String p2 = html.substring(html.indexOf("<body>") + 6);
+                        String data = p1 + "<body>" + barcode(ativacao) + p2;
+                        String filename = ativacao + ".pdf";
+                        html2pdf(data, filename);
                     }
                 }
             }
             catch (Exception ex) {
+                logs.setText("ERRO: " + ex.getMessage());
                 ex.printStackTrace();
             }
             
